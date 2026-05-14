@@ -205,6 +205,97 @@ document.getElementById('wineForm').addEventListener('submit', e => {
   renderAll();
 });
 
+// --- Overview ---
+
+function renderOverview() {
+  const totalLabels = wines.length;
+  const totalBottles = wines.reduce((s, w) => s + w.quantity, 0);
+  const totalValue = wines.reduce((s, w) => s + (w.price || 0) * w.quantity, 0);
+  const lowStock = wines.filter(w => w.quantity > 0 && w.quantity <= 2).length;
+  const outOfStock = wines.filter(w => w.quantity === 0).length;
+
+  const byType = wines.reduce((acc, w) => {
+    if (!acc[w.type]) acc[w.type] = { labels: 0, bottles: 0, value: 0 };
+    acc[w.type].labels += 1;
+    acc[w.type].bottles += w.quantity;
+    acc[w.type].value += (w.price || 0) * w.quantity;
+    return acc;
+  }, {});
+
+  const typeRows = Object.entries(byType)
+    .sort((a, b) => b[1].bottles - a[1].bottles)
+    .map(([type, s]) => `
+      <tr>
+        <td><span class="badge ${TYPE_BADGE[type] || 'badge-red'}">${esc(type)}</span></td>
+        <td>${s.labels}</td>
+        <td>${s.bottles}</td>
+        <td>${s.value > 0 ? `€${s.value.toFixed(2)}` : '—'}</td>
+      </tr>`).join('');
+
+  const wineRows = [...wines]
+    .sort((a, b) => a.type.localeCompare(b.type) || a.name.localeCompare(b.name))
+    .map(w => `
+      <tr>
+        <td>${esc(w.name)}</td>
+        <td><span class="badge ${TYPE_BADGE[w.type] || 'badge-red'}">${esc(w.type)}</span></td>
+        <td>${w.vintage || '—'}</td>
+        <td>${esc(w.region || '—')}</td>
+        <td>${w.quantity}</td>
+        <td>${w.price ? `€${w.price.toFixed(2)}` : '—'}</td>
+        <td>${w.price ? `€${(w.price * w.quantity).toFixed(2)}` : '—'}</td>
+      </tr>`).join('');
+
+  document.getElementById('overviewContent').innerHTML = `
+    <div class="overview-summary">
+      <div class="stat"><div class="stat-value">${totalLabels}</div><div class="stat-label">Labels</div></div>
+      <div class="stat"><div class="stat-value">${totalBottles}</div><div class="stat-label">Bottles</div></div>
+      <div class="stat"><div class="stat-value">${Object.keys(byType).length}</div><div class="stat-label">Types</div></div>
+      ${totalValue > 0 ? `<div class="stat"><div class="stat-value">€${totalValue.toFixed(2)}</div><div class="stat-label">Est. Value</div></div>` : ''}
+      <div class="stat"><div class="stat-value">${lowStock}</div><div class="stat-label">Low stock</div></div>
+      <div class="stat"><div class="stat-value">${outOfStock}</div><div class="stat-label">Out of stock</div></div>
+    </div>
+
+    ${totalLabels === 0 ? `
+      <p class="overview-empty">Your cellar is empty. Add your first wine to see the overview.</p>
+    ` : `
+      <h3 class="overview-section">By type</h3>
+      <div class="overview-table-wrap">
+        <table class="overview-table">
+          <thead>
+            <tr><th>Type</th><th>Labels</th><th>Bottles</th><th>Value</th></tr>
+          </thead>
+          <tbody>${typeRows}</tbody>
+        </table>
+      </div>
+
+      <h3 class="overview-section">All wines</h3>
+      <div class="overview-table-wrap">
+        <table class="overview-table">
+          <thead>
+            <tr><th>Name</th><th>Type</th><th>Vintage</th><th>Region</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr>
+          </thead>
+          <tbody>${wineRows}</tbody>
+        </table>
+      </div>
+    `}
+  `;
+}
+
+function openOverview() {
+  renderOverview();
+  document.getElementById('overviewModal').classList.remove('hidden');
+}
+
+function closeOverview() {
+  document.getElementById('overviewModal').classList.add('hidden');
+}
+
+document.getElementById('btnOverview').addEventListener('click', openOverview);
+document.getElementById('overviewClose').addEventListener('click', closeOverview);
+document.getElementById('overviewModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeOverview();
+});
+
 // --- Delete confirm ---
 
 let pendingDeleteId = null;
@@ -250,6 +341,7 @@ document.getElementById('confirmModal').addEventListener('click', e => {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     closeModal();
+    closeOverview();
     document.getElementById('confirmModal').classList.add('hidden');
     pendingDeleteId = null;
   }
