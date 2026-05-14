@@ -278,6 +278,64 @@ select { cursor: pointer; }
 }
 
 .modal-box.small { max-width: 360px; }
+.modal-box.large { max-width: 880px; }
+
+/* Overview */
+.overview-summary {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 1rem;
+  background: var(--surface2);
+  border-radius: var(--radius);
+  margin-bottom: 1.2rem;
+}
+
+.overview-section {
+  font-size: .95rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin: 1.2rem 0 .6rem;
+}
+
+.overview-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.overview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .85rem;
+}
+
+.overview-table th,
+.overview-table td {
+  padding: .55rem .8rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.overview-table th {
+  background: var(--surface2);
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: .72rem;
+  letter-spacing: .5px;
+}
+
+.overview-table tbody tr:last-child td { border-bottom: none; }
+.overview-table tbody tr:hover { background: var(--surface2); }
+
+.overview-empty {
+  color: var(--text-muted);
+  text-align: center;
+  padding: 2rem 1rem;
+}
 
 .modal-box h2 { font-size: 1.2rem; margin-bottom: 1.2rem; }
 
