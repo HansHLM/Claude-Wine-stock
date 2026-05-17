@@ -40,9 +40,12 @@ function renderStats() {
     <div class="stat"><div class="stat-value">${wines.length}</div><div class="stat-label">Labels</div></div>
     <div class="stat"><div class="stat-value">${total}</div><div class="stat-label">Bottles</div></div>
     <div class="stat"><div class="stat-value">${types}</div><div class="stat-label">Types</div></div>
-    ${value > 0 ? `<div class="stat"><div class="stat-value">€${value.toFixed(0)}</div><div class="stat-label">Est. Value</div></div>` : ''}
+    ${value > 0 ? `<div class="stat"><div class="stat-value">€${value.toFixed(0)}</div><div class="stat-label">Value</div></div>` : ''}
   `;
 }
+
+const ICON_EDIT = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>';
+const ICON_DELETE = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>';
 
 // --- Render list ---
 
@@ -77,8 +80,8 @@ function renderList() {
   if (!list.length) {
     el.innerHTML = `
       <div class="empty-state">
-        <p>🍾</p>
-        <p>${wines.length ? 'No wines match your search.' : 'Your cellar is empty. Add your first wine!'}</p>
+        <div class="empty-icon">∅</div>
+        <p>${wines.length ? 'No wines match your search.' : 'Your cellar is empty — add your first wine.'}</p>
       </div>`;
     return;
   }
@@ -93,14 +96,18 @@ function renderList() {
 function cardHTML(w) {
   const badge = TYPE_BADGE[w.type] || 'badge-red';
   const stockClass = w.quantity === 0 ? 'out-of-stock' : w.quantity <= 2 ? 'low-stock' : '';
+  const stockPill = w.quantity === 0
+    ? '<span class="stock-pill out">Out</span>'
+    : w.quantity <= 2 ? '<span class="stock-pill">Low</span>' : '';
 
   return `
     <div class="wine-card ${stockClass}" data-id="${w.id}">
+      ${stockPill}
       <div class="card-header">
         <div class="wine-name">${esc(w.name)}</div>
         <div class="card-header-actions">
-          <button class="btn-icon" data-action="edit" data-id="${w.id}" title="Edit">✏️</button>
-          <button class="btn-icon" data-action="delete" data-id="${w.id}" title="Delete">🗑️</button>
+          <button class="btn-icon" data-action="edit" data-id="${w.id}" title="Edit" aria-label="Edit">${ICON_EDIT}</button>
+          <button class="btn-icon" data-action="delete" data-id="${w.id}" title="Delete" aria-label="Delete">${ICON_DELETE}</button>
         </div>
       </div>
       <div class="wine-meta">
@@ -111,12 +118,12 @@ function cardHTML(w) {
       ${w.notes ? `<div class="wine-notes">${esc(w.notes)}</div>` : ''}
       <div class="card-footer">
         <div class="quantity-control">
-          <button class="btn btn-ghost btn-sm btn-icon" data-action="dec" data-id="${w.id}" ${w.quantity === 0 ? 'disabled' : ''}>−</button>
-          <span>${w.quantity}</span>
-          <button class="btn btn-ghost btn-sm btn-icon" data-action="inc" data-id="${w.id}">+</button>
+          <button class="qty-btn" data-action="dec" data-id="${w.id}" ${w.quantity === 0 ? 'disabled' : ''} aria-label="Decrease">−</button>
+          <span class="qty-value">${w.quantity}</span>
+          <button class="qty-btn" data-action="inc" data-id="${w.id}" aria-label="Increase">+</button>
           <span class="quantity-label">bottles</span>
         </div>
-        ${w.price ? `<div class="price-tag"><strong>€${w.price.toFixed(2)}</strong>/btl</div>` : ''}
+        ${w.price ? `<div class="price-tag"><strong>€${w.price.toFixed(2)}</strong> / btl</div>` : ''}
       </div>
     </div>`;
 }
