@@ -1,0 +1,83 @@
+:root {
+  /* Hoofdkleuren */
+  --grachtengroen:        #1F3B2D;
+  --mergelwit:            #EDE4CD;
+
+  /* Nuances grachtengroen */
+  --grachtengroen-diep:   #142318;
+  --grachtengroen-gedimd: #2F5142;
+
+  /* Nuances mergelwit */
+  --mergelwit-warm:       #F4ECD6;
+  --mergelwit-gedimd:     #C9C2AE;
+
+  /* Tedere accenten — spaarzaam */
+  --koper:                #A87C5A;
+  --inkt:                 #0D1F18;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+*::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--grachtengroen);
+  color: var(--mergelwit);
+  font-family: 'Mona Sans', system-ui, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Newsreader', Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--koper);
+  text-decoration: none;
+  transition: color 200ms ease;
+}
+a:hover { color: var(--mergelwit-warm); }
+
+::selection {
+  background: var(--koper);
+  color: var(--mergelwit-warm);
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--grachtengroen-gedimd);
+  border-radius: 5px;
+  border: 2px solid var(--grachtengroen);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
